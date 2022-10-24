@@ -45,7 +45,7 @@ func main() {
 func generate(ch chan int) {
 	for i := 0; i < 30; i++ {
 		ch <- i
-		time.Sleep(333 * time.Millisecond)
+		time.Sleep(33 * time.Millisecond)
 	}
 }
 
@@ -63,4 +63,4 @@ func calculate(in, out chan int, limit chan struct{}, wg *sync.WaitGroup) {
 	show <- "} "
 }
 
-var show = make(chan string, 3*10)
+var show = make(chan string, 1)
