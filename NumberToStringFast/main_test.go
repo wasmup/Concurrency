@@ -5,32 +5,44 @@ import (
 	"testing"
 )
 
-func BenchmarkFormatInt(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = strconv.FormatInt(int64(i), 10)
-	}
-}
-
 func BenchmarkItoa(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = strconv.Itoa(i)
 	}
 }
 
-func BenchmarkNumberToString(b *testing.B) {
+func BenchmarkNumberToStringLog10(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = NumberToString(i)
+		_ = NumberToStringLog10(i)
 	}
 }
 
-func BenchmarkNumberToString2(b *testing.B) {
+func BenchmarkNumberToStringLog10Unsafe(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = NumberToString2(i)
+		_ = NumberToStringLog10Unsafe(i)
 	}
 }
 
-func BenchmarkNumberToStringFast(b *testing.B) {
+func BenchmarkNumberToStringSt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_ = NumberToStringFast(i)
+		_ = NumberToStringSt(i)
+	}
+}
+
+func BenchmarkFormatInt(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = strconv.FormatInt(int64(i), 10)
+	}
+}
+
+func BenchmarkNumberToStringSlice(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = NumberToStringSlice(i)
+	}
+}
+
+func BenchmarkNumberToStringArray(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = NumberToStringArray(i)
 	}
 }

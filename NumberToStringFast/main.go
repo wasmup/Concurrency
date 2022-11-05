@@ -9,11 +9,13 @@ import (
 )
 
 func main() {
+	fmt.Println(NumberToStringSt(-1000000))
+
 	fmt.Println(len(fmt.Sprint(math.MaxInt64))) // 19
 	fmt.Println(len(fmt.Sprint(math.MinInt64))) // 20
 
-	fmt.Println(NumberToStringFast(-1000000))
-	fmt.Println(NumberToStringFast(-42))
+	fmt.Println(NumberToStringArray(-1000000))
+	fmt.Println(NumberToStringArray(-42))
 
 	const N = 100000000
 	t0 := time.Now()
@@ -30,12 +32,12 @@ func main() {
 
 	t0 = time.Now()
 	for i := 0; i < N; i++ {
-		_ = NumberToStringFast(i)
+		_ = NumberToStringArray(i)
 	}
 	fmt.Println(time.Since(t0)) // 1.85s
 }
 
-func NumberToString(n int) string {
+func NumberToStringLog10(n int) string {
 	if n == 0 {
 		return "0"
 	}
@@ -57,7 +59,7 @@ func NumberToString(n int) string {
 	return string(b)
 }
 
-func NumberToString2(n int) string {
+func NumberToStringLog10Unsafe(n int) string {
 	if n == 0 {
 		return "0"
 	}
@@ -79,7 +81,7 @@ func NumberToString2(n int) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 
-func NumberToStringFast(n int) string {
+func NumberToStringArray(n int) string {
 	if n == 0 {
 		return "0"
 	}
@@ -98,4 +100,42 @@ func NumberToStringFast(n int) string {
 		b[i] = '-'
 	}
 	return string(b[i:])
+}
+
+func NumberToStringSlice(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	sign := n < 0
+	if sign {
+		n = -n
+	}
+	b := make([]byte, 20)
+	i := len(b)
+	for ; n != 0; n /= 10 {
+		i--
+		b[i] = byte(n%10) + '0'
+	}
+	if sign {
+		i--
+		b[i] = '-'
+	}
+	return string(b[i:])
+}
+
+func NumberToStringSt(n int) (s string) {
+	if n == 0 {
+		return "0"
+	}
+	sign := n < 0
+	if sign {
+		n = -n
+	}
+	for ; n != 0; n /= 10 {
+		s = string(byte(n%10)+'0') + s
+	}
+	if sign {
+		s = "-" + s
+	}
+	return
 }
