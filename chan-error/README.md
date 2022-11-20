@@ -42,3 +42,15 @@ func e1(id int, ch chan error) {
 }
 
 ```
+
+
+```go
+func g2(id int, ch chan error) {
+	id++
+	go g1(id, ch)
+}
+func g1(id int, ch chan error) {
+	id++
+	ch <- fmt.Errorf("parachute failed: %d", id)
+}
+```
