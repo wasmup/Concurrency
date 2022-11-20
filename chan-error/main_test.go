@@ -15,3 +15,11 @@ func BenchmarkErrorChan(b *testing.B) {
 		_ = <-ch
 	}
 }
+
+func BenchmarkGoroutineErrorChan(b *testing.B) {
+	ch := make(chan error, 1)
+	for i := 0; i < b.N; i++ {
+		g10(1, ch)
+		_ = <-ch
+	}
+}

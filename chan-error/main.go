@@ -20,6 +20,13 @@ func main() {
 		_ = <-ch
 	}
 	fmt.Println(time.Since(now))
+
+	now = time.Now()
+	for i := 0; i < max; i++ {
+		g10(1, ch)
+		_ = <-ch
+	}
+	fmt.Println(time.Since(now))
 }
 
 func f10(id int) error {
@@ -100,6 +107,47 @@ func e2(id int, ch chan error) {
 	e1(id, ch)
 }
 func e1(id int, ch chan error) {
+	id++
+	ch <- fmt.Errorf("parachute failed: %d", id)
+}
+
+func g10(id int, ch chan error) {
+	id++
+	go g9(id, ch)
+}
+func g9(id int, ch chan error) {
+	id++
+	go g8(id, ch)
+}
+func g8(id int, ch chan error) {
+	id++
+	go g7(id, ch)
+}
+func g7(id int, ch chan error) {
+	id++
+	go g6(id, ch)
+}
+func g6(id int, ch chan error) {
+	id++
+	go g5(id, ch)
+}
+func g5(id int, ch chan error) {
+	id++
+	go g4(id, ch)
+}
+func g4(id int, ch chan error) {
+	id++
+	go g3(id, ch)
+}
+func g3(id int, ch chan error) {
+	id++
+	go g2(id, ch)
+}
+func g2(id int, ch chan error) {
+	id++
+	go g1(id, ch)
+}
+func g1(id int, ch chan error) {
 	id++
 	ch <- fmt.Errorf("parachute failed: %d", id)
 }
