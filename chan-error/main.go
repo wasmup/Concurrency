@@ -7,6 +7,7 @@ import (
 
 func main() {
 	const max = 10_000_000
+
 	now := time.Now()
 	for i := 0; i < max; i++ {
 		_ = f10(1)
@@ -27,6 +28,13 @@ func main() {
 		_ = <-ch
 	}
 	fmt.Println(time.Since(now))
+
+	now = time.Now()
+	for i := 0; i < max; i++ {
+		_ = c10(1)
+	}
+	fmt.Println(time.Since(now))
+
 }
 
 func f10(id int) error {
@@ -150,4 +158,46 @@ func g2(id int, ch chan error) {
 func g1(id int, ch chan error) {
 	id++
 	ch <- fmt.Errorf("parachute failed: %d", id)
+}
+
+func c10(id int) string {
+	id++
+	return c9(id)
+}
+func c9(id int) string {
+	id++
+	return c8(id)
+}
+func c8(id int) string {
+	id++
+	return c7(id)
+}
+func c7(id int) string {
+	id++
+	return c6(id)
+}
+func c6(id int) string {
+	id++
+	return c5(id)
+}
+func c5(id int) string {
+	id++
+	return c4(id)
+}
+func c4(id int) string {
+	id++
+	return c3(id)
+}
+func c3(id int) string {
+	id++
+	return c2(id)
+}
+func c2(id int) string {
+	id++
+	return c1(id)
+}
+func c1(id int) string {
+	id++
+	// return "parachute failed: " + strconv.Itoa(id)
+	return fmt.Errorf("parachute failed: %d", id).Error()
 }
