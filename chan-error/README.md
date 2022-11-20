@@ -1,5 +1,8 @@
 # error retrn is 1.25x faster than chan error
 # error retrn is 20x faster than goroutine
+
+*Conclusion*: Should performance is a concern Use simple error return and primitive types.
+
 ```sh
 	go run .
 1.664232336s
