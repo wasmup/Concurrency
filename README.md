@@ -7,7 +7,7 @@
 - The Go Programming Language by Alan A. A. Donovan, and Brian W. Kernighan
 - Learn Go with Tests by Chris James
 - Concurrency in Go by Katherine Cox-Buday
-- Mastering Concurrency in Go by 
+- Mastering Concurrency in Go by Kozyra Nathan
 - Pro Go by Adam Freeman
 - Let's Go Further by Alex Edwards
 - Hands-On Dependency Injection in Go by Corey Scott
