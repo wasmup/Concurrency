@@ -1,3 +1,3 @@
-module app101
+module my
 
-go 1.19
+go 1.20
