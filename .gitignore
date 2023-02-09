@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+pgo/default.pgo
+pgo/markdown.nopgo
+pgo/nopgo.txt
+pgo/markdown.withpgo
+pgo/README.html
+pgo/withpgo.txt
