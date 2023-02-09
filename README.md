@@ -50,3 +50,5 @@
 # Blog
 - https://go.dev/blog/
 
+# Profile-guided optimization
+- https://go.dev/doc/pgo
