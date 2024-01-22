@@ -17,7 +17,7 @@ func main() {
 	const total = 1e8
 	for i := 0; i < n; i++ {
 		wg.Add(1)
-		monteCarloPi(counts, i, total/n, &wg)
+		go monteCarloPi(counts, i, total/n, &wg)
 	}
 
 	wg.Wait()
