@@ -1,5 +1,8 @@
 ```sh
-clang++ -O3 -march=native -o main main.cpp
+time clang++ -O3 -march=native -o main main.cpp
+# real    0m10.974s
+# user    0m10.778s
+# sys     0m0.195s
 ./main
 curl -i  http://localhost:8080/?q=1234567890
 	
@@ -14,7 +17,13 @@ wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
 # Transfer/sec:      6.92MB
 
 
-g++ -O3 -std=c++17 main.cpp -o main
+time g++ -O3 -std=c++17 main.cpp -o main
+# real    0m10.339s
+# user    0m9.991s
+# sys     0m0.344s
+./main
+wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
+
 # Running 10s test @ http://localhost:8080/?q=1234567890
 #   4 threads and 80 connections
 #   Thread Stats   Avg      Stdev     Max   +/- Stdev
@@ -25,6 +34,7 @@ g++ -O3 -std=c++17 main.cpp -o main
 # Transfer/sec:      7.28MB
 
 g++ -std=c++17 main.cpp -o main
+./main
 
 wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
 

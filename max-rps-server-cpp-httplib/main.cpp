@@ -58,7 +58,7 @@ int main() {
         res.status = 200;
     });
 
-    svr.Get("/", handler);
+    // svr.Get("/", handler); // Requests/sec:    295.26
 
     svr.listen("localhost", 8080);
 
