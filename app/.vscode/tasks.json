@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build with make",
+            "type": "shell",
+            "command": "make",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [
+                "$go"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "preLaunchTask",
+            "type": "shell",
+            "command": ".vscode/start.sh"
+        },
+        {
+            "label": "postDebugTask",
+            "type": "shell",
+            "command": "echo $GIT_COMMIT_HASH"
+        }
+    ]
+}

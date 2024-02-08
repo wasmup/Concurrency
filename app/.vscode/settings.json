@@ -1,0 +1,6 @@
+{
+    "go.buildFlags": [
+        "-trimpath=true",
+        "-ldflags=-X main.GitCommit=$(git rev-parse HEAD)",
+    ]
+}

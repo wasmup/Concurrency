@@ -13,16 +13,15 @@ func main() {
 	fmt.Println("NumCPU:", nCPU)
 
 	t0 := time.Now()
-
 	var n uint64 = math.MaxUint64
 	for i := 0; !isOddPrime(n); n -= 2 {
 		i++
 		fmt.Println(i, n)
 	}
-	fmt.Println("u64 max prime:", n) // 18446744073709551557
-	fmt.Println(time.Since(t0))      // 3.354871987s
+	fmt.Println("u64 max prime:", n)       // 18446744073709551557
+	fmt.Println("diff:", math.MaxUint64-n) // 58
+	fmt.Println(time.Since(t0))            // 3.287094056s
 
-	// fmt.Println(isOddPrime(18446744073709551557))
 }
 
 var nCPU = runtime.NumCPU()

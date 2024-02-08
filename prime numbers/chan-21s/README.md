@@ -1,11 +1,11 @@
 ```sh
-	time go run .
+time go run .
 
-# real    0m21.399s
-# user    1m59.538s
-# sys     0m1.178s
+# real    0m21.016s
+# user    1m57.014s
+# sys     0m1.056s
 
-	go tool pprof -http=":8787" cpu.out
+go tool pprof -http=":8787" cpu.out
 
 ```
 
