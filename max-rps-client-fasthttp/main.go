@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log/slog"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -11,12 +12,15 @@ import (
 )
 
 func main() {
-	var workers, requestsPerWorker int
-	flag.IntVar(&workers, "c", 32, "Number of workers")
-	flag.IntVar(&requestsPerWorker, "n", 100000, "Total number of requests")
+	var workers int
+	var addr string
+	var d time.Duration
+	flag.IntVar(&workers, "c", 100, "Number of workers")
+	flag.DurationVar(&d, "d", 10*time.Second, "Total duration of requests")
+	flag.StringVar(&addr, "url", "http://localhost:8181", "URL")
+
 	flag.Parse()
-	requestsPerWorker /= workers
-	fmt.Println("c", workers, "rpw", requestsPerWorker, "n", workers*requestsPerWorker)
+	fmt.Println("c", workers, "d", d)
 
 	var ok, failed atomic.Uint64
 	var wg sync.WaitGroup
@@ -26,8 +30,9 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for i := 0; i < requestsPerWorker; i++ {
-				makeRequest(&ok, &failed)
+			var c fasthttp.Client
+			for time.Since(start) < d {
+				makeRequest(&c, &ok, &failed, addr)
 			}
 		}()
 	}
@@ -36,9 +41,10 @@ func main() {
 	printResults(&ok, &failed, start)
 }
 
-func makeRequest(ok, failed *atomic.Uint64) {
-	statusCode, _, err := fasthttp.Get(nil, "http://localhost:8080/")
+func makeRequest(c *fasthttp.Client, ok, failed *atomic.Uint64, addr string) {
+	statusCode, _, err := c.Get(nil, addr)
 	if err != nil || statusCode != fasthttp.StatusOK {
+		slog.Error("GET", "err", err)
 		failed.Add(1)
 		return
 	}
