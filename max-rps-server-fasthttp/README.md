@@ -1,7 +1,15 @@
-```sh
-go run .
+<img src="fast.png">
 
-Requests: 3171233, Total Elapsed Time: 7.812955765s
+---
+
+```sh
+CGO_ENABLED=0 go build -trimpath=true -ldflags=-s
+file ./app
+./app
+
+go run -trimpath=true .
+	
+go tool pprof -http=":8789" cpu.out
 
 wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
 # Running 10s test @ http://localhost:8080/?q=1234567890

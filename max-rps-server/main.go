@@ -105,6 +105,14 @@ type app struct {
 	elapsed time.Duration
 }
 
+func (p *app) update(t0 time.Time) {
+	d := time.Since(t0)
+	p.Lock()
+	p.count++
+	p.elapsed += d
+	p.Unlock()
+}
+
 func (p *app) handleHome(w http.ResponseWriter, r *http.Request) {
 	if info {
 		defer p.update(time.Now())
@@ -114,14 +122,6 @@ func (p *app) handleHome(w http.ResponseWriter, r *http.Request) {
 	if echo != "" {
 		io.WriteString(w, echo)
 	}
-}
-
-func (p *app) update(t0 time.Time) {
-	d := time.Since(t0)
-	p.Lock()
-	p.count++
-	p.elapsed += d
-	p.Unlock()
 }
 
 func (p *app) printStats(ctx context.Context, wg *sync.WaitGroup) {
