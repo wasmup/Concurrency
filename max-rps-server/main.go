@@ -21,11 +21,9 @@ import (
 const info = true
 
 func main() {
-	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})))
-	slog.Info(runtime.Version())
-	localIP()
-
-	{ // Create the CPU profile file, overwrite if exists.
+	{
+		// Create the CPU profile file, overwrite if exists.
+		// go tool pprof -http=":8787" cpu.out
 		f, err := os.Create("cpu.out")
 		if err != nil {
 			log.Fatal(err)
@@ -39,18 +37,45 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})))
+	slog.Info(runtime.Version())
+	localIP()
+
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	var ap app
+
+	wg.Add(1)
+	go ap.serve(ctx, cancel, &wg)
+
 	if info {
 		wg.Add(1)
 		go ap.printStats(ctx, &wg)
 	}
 
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	select {
+	case sig := <-stop:
+		slog.Info("terminated", "signal", sig)
+		cancel()
+
+	case <-ctx.Done():
+		slog.Info("terminated by context")
+	}
+
+	wg.Wait()
+	slog.Info("App closed")
+}
+
+func (p *app) serve(ctx context.Context, cancel context.CancelFunc, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", ap.handleHome)
+	mux.HandleFunc("/", p.handleHome)
+
 	server := http.Server{
 		Addr:         ":8080",
 		Handler:      mux,
@@ -58,36 +83,20 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
-
-		err := server.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
-			slog.Error("Server", "closed", err)
-			cancel()
+		<-ctx.Done()
+		slog.Info("Shutting down server...")
+		err := server.Shutdown(ctx) // gracefully
+		if err != nil {
+			slog.Error("Server", "Shutdown", err)
 		}
 	}()
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-	select {
-	case s := <-stop:
-		slog.Info("terminated", "signal", s)
+	err := server.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed {
+		slog.Error("Server", "closed", err)
 		cancel()
-
-	case <-ctx.Done():
-		slog.Info("terminated by context")
 	}
-
-	slog.Info("Shutting down server...")
-	err := server.Shutdown(ctx) //gracefully
-	if err != nil {
-		slog.Error("Server", "Shutdown", err)
-	}
-
-	wg.Wait()
-	slog.Info("App closed")
 }
 
 type app struct {

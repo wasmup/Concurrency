@@ -1,8 +1,7 @@
-```sh
-go run .
 
-curl -i http://localhost:8080/?q=1234567890Q
-# Requests: 3845672, Total Elapsed Time: 38.603340236s
+
+```sh
+go run -trimpath=true .
 
 
 wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
@@ -14,7 +13,14 @@ wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
 #   3845619 requests in 10.10s, 498.78MB read
 # Requests/sec: 380752.58
 # Transfer/sec:     49.38MB
+
+
+curl -i http://localhost:8080/?q=1234567890
+# Requests: 3845672, Total Elapsed Time: 38.603340236s
+
 ```
+
+<img src="gnet.png">
 
 
 ```sh

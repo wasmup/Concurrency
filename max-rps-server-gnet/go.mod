@@ -1,6 +1,6 @@
 module app
 
-go 1.21.5
+go 1.22.1
 
 require (
 	github.com/evanphx/wildcat v0.0.0-20141114174135-e7012f664567
