@@ -52,3 +52,16 @@
 
 # Profile-guided optimization
 - https://go.dev/doc/pgo
+
+---
+
+# HTTP Servers
+
+## net/http 170k Requests/sec
+- https://github.com/wasmup/Concurrency/tree/main/max-rps-server
+
+## fasthttp 300k Requests/sec
+- https://github.com/wasmup/Concurrency/tree/main/max-rps-server-fasthttp
+
+## gnet 380k Requests/sec
+- https://github.com/wasmup/Concurrency/tree/main/max-rps-server-gnet
