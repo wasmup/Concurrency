@@ -1,19 +1,35 @@
+<img src="cpu.png">
+
+
 ```sh
-go run .
+CGO_ENABLED=0 go build -trimpath=true -ldflags=-s
+file ./app
+./app
 
-# Requests: 2_208_160, Total Elapsed Time: 3.486776405s
+go run -trimpath=true .
+	
+go tool pprof -http=":8789" cpu.out
 
-wrk -t4 -c80 -d10s http://localhost:8080/?q=1234567890
 
-# Running 10s test @ http://localhost:8080/?q=1234567890
-#   4 threads and 80 connections
+wrk -t4 -c100 -d30s http://localhost:8080
+# Running 30s test @ http://localhost:8080
+#   4 threads and 100 connections
 #   Thread Stats   Avg      Stdev     Max   +/- Stdev
-#     Latency   649.36us    0.96ms  11.91ms   87.57%
-#     Req/Sec    55.29k     8.26k   86.93k    69.25%
-#   2208101 requests in 10.04s, 280.07MB read
-# Requests/sec: 219_875.56
-# Transfer/sec:     27.89MB
+#     Latency     0.91ms    1.39ms  33.97ms   88.83%
+#     Req/Sec    43.47k    10.23k   84.63k    69.23%
+#   5192603 requests in 30.04s, 371.40MB read
+# Requests/sec: 172845.26
+# Transfer/sec:     12.36MB
 
+
+wrk -t4 -c100 -d30s http://localhost:8080/?q=1234567890
+# Running 30s test @ http://localhost:8080/?q=1234567890
+#   4 threads and 100 connections
+#   Thread Stats   Avg      Stdev     Max   +/- Stdev
+#     Latency     1.00ms    1.29ms  24.90ms   86.98%
+#     Req/Sec    36.01k     7.83k   69.25k    69.90%
+#   4300418 requests in 30.04s, 520.85MB read
+# Requests/sec: 143167.42
 
 
 ```

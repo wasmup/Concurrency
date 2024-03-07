@@ -12,7 +12,7 @@ build:
 	go version -m ./app
 
 run:
-	./app
+	go run -trimpath=true .
 
 clean:
 	rm -rf app
@@ -30,6 +30,11 @@ info:
 	file ./app
 	go version -m ./app
 	go version -m $(which go)
+
+
+	go tool pprof -http=":8789" cpu.out
+	go tool pprof -http=":8787" mem.out
+
 
 .PHONY: all build run clean info
 

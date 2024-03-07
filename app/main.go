@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})))
+	slog.SetDefault(logger)
 	slog.Info(Name, "Version", Version)
 	slog.Info(Name, "GitCommit", GitCommit)
 	slog.Info(Name, "runtime.Version", runtime.Version())
@@ -30,7 +30,7 @@ func main() {
 	withServer := len(os.Args) == 1
 	if withServer {
 		wg.Add(1)
-		go serve(ctx, &wg)
+		go serve(&wg)
 	}
 
 	wg.Add(1)
@@ -101,11 +101,11 @@ func doYourJob(ctx context.Context) (key string, err error) {
 	return
 }
 
-func serve(ctx context.Context, wg *sync.WaitGroup) {
+func serve(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/Acct", home)
+	mux.HandleFunc("/logs/level", logsLevel)
 
 	server = &http.Server{
 		Addr:         serverAddr,
@@ -123,14 +123,39 @@ func serve(ctx context.Context, wg *sync.WaitGroup) {
 	slog.Info("Server: graceful shutdown completed")
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
+var (
+	lvl    = new(slog.LevelVar)
+	logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: true, Level: lvl}))
+)
+
+func logsLevel(w http.ResponseWriter, r *http.Request) {
 	slog.Info("home", "ClientIP", clientIP(r))
+
 	type response struct {
-		Status  int
-		Key     string
-		Account string
+		Status int
+		Level  slog.Level
 	}
-	json.NewEncoder(w).Encode(response{Status: 200, Key: "Key1234", Account: "Account1234"})
+
+	switch r.Method {
+	case http.MethodGet:
+		json.NewEncoder(w).Encode(response{Status: http.StatusOK, Level: lvl.Level()})
+
+	case http.MethodPut:
+		var v *response
+		err := json.NewDecoder(r.Body).Decode(&v)
+		if err != nil {
+			httpError(w, http.StatusBadRequest)
+			return
+		}
+		lvl.Set(v.Level)
+
+	default:
+		httpError(w, http.StatusMethodNotAllowed)
+	}
+}
+
+func httpError(w http.ResponseWriter, code int) {
+	http.Error(w, http.StatusText(code), code)
 }
 
 func clientIP(r *http.Request) string {
@@ -145,7 +170,7 @@ func clientIP(r *http.Request) string {
 }
 
 var (
-	address    = "http://127.0.0.1:8080/Acct"
+	address    = "http://127.0.0.1:8080/levels"
 	serverAddr = ":8080"
 	client     = http.Client{
 		Timeout: 10 * time.Second,
@@ -155,5 +180,5 @@ var (
 	Version   = "1.0.0"
 	Name      = "MyApp"
 	GitCommit = "git rev-parse HEAD"
-	// CGO_ENABLED=0 go build -ldflags="-s -X main.Version=$(Version) -X main.Name=$(Name) -X main.GitCommit=$(GIT_COMMIT)" -trimpath=true .
+	// CGO_ENABLED=0 go build -trimpath=true -ldflags="-s -X main.Version=$(Version) -X main.Name=$(Name) -X main.GitCommit=$(GIT_COMMIT)"
 )
