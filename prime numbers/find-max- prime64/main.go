@@ -6,52 +6,53 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
-	"time"
 )
 
 func main() {
-	fmt.Println("NumCPU:", nCPU)
-
-	t0 := time.Now()
 	var n uint64 = math.MaxUint64
-	for i := 0; !isOddPrime(n); n -= 2 {
-		i++
-		fmt.Println(i, n)
+	for ; !isPrime(n); n -= 2 {
 	}
-	fmt.Println("u64 max prime:", n)       // 18446744073709551557
-	fmt.Println("diff:", math.MaxUint64-n) // 58
-	fmt.Println(time.Since(t0))            // 3.287094056s
-
+	fmt.Println(n) // 18446744073709551557
 }
 
 var nCPU = runtime.NumCPU()
 
-func isOddPrime(n uint64) bool {
+func isPrime(n uint64) bool {
+	if n <= 3 {
+		return n == 2 || n == 3
+	}
+	if n%2 == 0 || n%3 == 0 {
+		return false
+	}
+
+	var divisible atomic.Int32
 	q := uint64(math.Sqrt(float64(n)))
 	step := q / uint64(nCPU)
-	if step&1 == 1 {
-		step++ // make it even
-	}
+	step += step & 1 // make it even
 	var wg sync.WaitGroup
-	var quit int32
-	start := uint64(3)
+	var start uint64 = 3
+
 	for k := 0; k < nCPU; k++ {
 		end := start + step
 		if end > q {
 			end = q
 		}
+
 		wg.Add(1)
 		go func(start, end uint64) {
 			defer wg.Done()
-			for i := start; i <= end && atomic.LoadInt32(&quit) == 0; i += 2 {
+			for i := start; i <= end && divisible.Load() == 0; i += 2 {
 				if n%i == 0 {
-					atomic.StoreInt32(&quit, 1)
+					divisible.Store(1)
 					return
 				}
 			}
 		}(start, end)
+
 		start = end + 2
 	}
+
 	wg.Wait()
-	return quit == 0
+
+	return divisible.Load() == 0
 }
