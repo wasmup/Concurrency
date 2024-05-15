@@ -14,4 +14,7 @@ time go run -race .
 # user    1m40.147s
 # sys     0m0.333s
 
+# Escape analysis
+go build -gcflags=-m=3 ./...
+
 ```
