@@ -80,12 +80,17 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 	"runtime"
 	"sync"
 	"sync/atomic"
 )
 
 func main() {
+	if len(os.Args) > 1 {
+		fmt.Sscan(os.Args[1], &nCPU)
+	}
+
 	var n uint64 = math.MaxUint64
 	for ; !isPrime(n); n -= 2 {
 	}
@@ -123,7 +128,14 @@ func isPrime(n uint64) bool {
 	return divisible.Load() == 0
 }
 
+// from >= to
+// n >= 1
 func runTasksInParallel(from, to, n uint64, task func(uint64, uint64)) {
+	if n == 1 || from == to {
+		task(from, to)
+		return
+	}
+
 	totalTasks := to - from + 1
 	tasksPerCore := totalTasks / n
 	remainingTasks := totalTasks % n
